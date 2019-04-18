@@ -18,6 +18,9 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -42,121 +45,62 @@ MainActivity extends AppCompatActivity
 
     private static final String TAG = "PostDetailActivity";
 
-    protected DatabaseReference mDatabase;
-    protected DatabaseReference mPostReference;
 
-    public FirebaseAuth mAuth;
-
-    public FirebaseDatabase mDB;
+//    public FirebaseDatabase database = FirebaseDatabase.getInstance();
+//    public DatabaseReference ref = database.getReference("https://foodapp-fa8fb.firebaseio.com/");
 
 
-    public String uid;
-    public String author;
-    public String title;
-    public String body;
-    public int starCount = 0;
-    public Map<String, Boolean> stars = new HashMap<>();
+    public FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-    public FirebaseUser FireUser;
+//    public String userID = mAuth.getCurrentUser().getUid();
 
 
-    public static class Post {
-
-        public String author;
-        public String title;
-
-        public Post(String author, String title) {
-            // ...
-
-        }
-
-    }
-
-
-
-//    public Post user1;
-
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//
-//        ValueEventListener postListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // Get Post object and use the values to update the UI
-////                Post post = dataSnapshot.getValue(Post.class);
-////                post.title;
-//
-////                post.title;
-//
-//
-//
-//                // ...
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                // Getting Post failed, log a message
-//                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-//                // ...
-//            }
-//        };
-//
-//        mPostReference.addValueEventListener(postListener);
-//    }
-
-
-//    public void post(String uid, String author, String title, String body) {
-//
-//        this.uid = uid;
-//        this.author = author;
-//        this.title = title;
-//        this.body = body;
-//
-//
-//        Log.d(this.uid, uid);
-//        Log.d(this.author, author);
-//        Log.d(this.title, title);
-//        Log.d(this.body, body);
-//
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
-        TextView hello = findViewById(R.id.hello);
-//        hello.setText(mAuth.getCurrentUser().getDisplayName());
 
-
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("/");
-
-
-        // Attach a listener to read the data at our posts reference
-        ref.addValueEventListener(new ValueEventListener() {
+        mAuth.signInWithEmailAndPassword("garybakerdev@gmail.com", "Gary0704051").addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Post post = dataSnapshot.getValue(Post.class);
-                System.out.println(post);
-            }
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "signInWithEmail:success");
+                    FirebaseUser user = mAuth.getCurrentUser();
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
+                    TextView hello = findViewById(R.id.hello);
+
+                    hello.setText((CharSequence) user);
+
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "signInWithEmail:failure", task.getException());
+//                    Toast.makeText(EmailPasswordActivity.this, "Authentication failed.",
+//                            Toast.LENGTH_SHORT).show();
+
+                }
+
+                // ...
             }
         });
 
-        hello.setText("blah");
 
-        mDatabase.setValue("Hello, World!");
+
+
+//        hello.setText("testing");
+
+//        hello.setText(mAuth.getCurrentUser().getUid());
+
+//        hello.setText("blah");
+//        ref.setValue("Hello, World!");
 
         FloatingActionButton fab;
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -165,42 +109,41 @@ MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference usersRef = rootRef.child("");
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<String> list = new ArrayList<>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    String uid = ds.getKey();
-                    list.add(uid);
-                }
-
-                //Do what you need to do with your list
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, databaseError.getMessage()); //Don't ignore errors!
-            }
-        };
-        usersRef.addListenerForSingleValueEvent(valueEventListener)
-        ;
     }
+
+//    @Override
+//    public void onStart() {
+//
+//        super.onStart();
+//
+//
+//        // Attach a listener to read the data at our posts reference
+//        ref.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Post post = dataSnapshot.getValue(Post.class);
+//                System.out.println(post);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                System.out.println("The read failed: " + databaseError.getCode());
+//            }
+//        });
+//    }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -250,7 +193,7 @@ MainActivity extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
