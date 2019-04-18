@@ -16,9 +16,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,9 +45,9 @@ MainActivity extends AppCompatActivity
     protected DatabaseReference mDatabase;
     protected DatabaseReference mPostReference;
 
-    private FirebaseAuth mAuth;
+    public FirebaseAuth mAuth;
 
-    private FirebaseDatabase mDB;
+    public FirebaseDatabase mDB;
 
 
     public String uid;
@@ -55,64 +57,69 @@ MainActivity extends AppCompatActivity
     public int starCount = 0;
     public Map<String, Boolean> stars = new HashMap<>();
 
+    public FirebaseUser FireUser;
 
 
-    public FirebaseAuth mAuth;
-    private FirebaseUser FireUser;
+    public static class Post {
 
-    public Post user1;
+        public String author;
+        public String title;
 
-    @Override
-    public void onStart() {
-        super.onStart();
+        public Post(String author, String title) {
+            // ...
 
-        ValueEventListener postListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // Get Post object and use the values to update the UI
-                Post post = dataSnapshot.getValue(Post.class);
-//                post.title;
-
-//                post.title;
-
-
-                TextView hello = findViewById(R.id.hello);
-                hello.setText(mAuth.getCurrentUser().getDisplayName());
-                // ...
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // ...
-            }
-        };
-
-        mPostReference.addValueEventListener(postListener);
-    }
-
-    @Override
-    public void post(String uid, String author, String title, String body) {
-        this.uid = uid;
-        this.author = author;
-        this.title = title;
-        this.body = body;
-
-        String uid1 = user1.getUid();
-        String author1 = user1.getDisplayName();
-
-
-        Log.d(uid1, uid);
-        Log.d(author1, author);
-
-
-        Log.d(this.uid, uid);
-        Log.d(this.author, author);
-        Log.d(this.title, title);
-        Log.d(this.body, body);
+        }
 
     }
+
+
+
+//    public Post user1;
+
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//
+//        ValueEventListener postListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // Get Post object and use the values to update the UI
+////                Post post = dataSnapshot.getValue(Post.class);
+////                post.title;
+//
+////                post.title;
+//
+//
+//
+//                // ...
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                // Getting Post failed, log a message
+//                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+//                // ...
+//            }
+//        };
+//
+//        mPostReference.addValueEventListener(postListener);
+//    }
+
+
+//    public void post(String uid, String author, String title, String body) {
+//
+//        this.uid = uid;
+//        this.author = author;
+//        this.title = title;
+//        this.body = body;
+//
+//
+//        Log.d(this.uid, uid);
+//        Log.d(this.author, author);
+//        Log.d(this.title, title);
+//        Log.d(this.body, body);
+//
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,12 +128,32 @@ MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference("blah");
 
+        TextView hello = findViewById(R.id.hello);
+//        hello.setText(mAuth.getCurrentUser().getDisplayName());
+
+
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("/");
+
+
+        // Attach a listener to read the data at our posts reference
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Post post = dataSnapshot.getValue(Post.class);
+                System.out.println(post);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+
+        hello.setText("blah");
 
         mDatabase.setValue("Hello, World!");
-
-        post(mAuth().uid, mAuth().author, mAuth().title, mAuth().body);
 
         FloatingActionButton fab;
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -154,7 +181,7 @@ MainActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<String> list = new ArrayList<>();
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     String uid = ds.getKey();
                     list.add(uid);
                 }
@@ -226,58 +253,5 @@ MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @IgnoreExtraProperties
-    public static class Post extends AppCompatActivity {
-
-
-    //
-        public Post() {
-            // Default constructor required for calls to DataSnapshot.getValue(Post.class)
-        }
-
-
-    //    public FirebaseApp firebaseApp = FirebaseApp.initializeApp();
-
-
-    //    FirebaseUser user = mAuth.getInstance().getCurrentUser();
-    //
-
-
-        public void createPost(String uid, String author, String title, String body) {
-            this.uid = uid;
-            this.author = author;
-            this.title = title;
-            this.body = body;
-
-
-            String uid1 = user1.uid();
-            String author1 = user1.getDisplayName();
-
-
-            Log.d(uid1, uid);
-            Log.d(author1, author);
-
-
-            Log.d(this.uid, uid);
-            Log.d(this.author, author);
-            Log.d(this.title, title);
-            Log.d(this.body, body);
-        }
-
-        @Exclude
-        public Map<String, Object> toMap() {
-            HashMap<String, Object> result = new HashMap<>();
-            result.put("uid", uid);
-            result.put("author", author);
-            result.put("title", title);
-            result.put("body", body);
-            result.put("starCount", starCount);
-            result.put("stars", stars);
-
-            return result;
-        }
-
     }
 }
