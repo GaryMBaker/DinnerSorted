@@ -150,6 +150,7 @@ import java.util.Map;
         ref.updateChildren(childUpdates);
     }
 
+    //testing cli now
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
