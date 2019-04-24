@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MaterialSearchView_search_animate"></declare-styleable>
+    <declare-styleable name="MaterialSearchView_search_menu_position"></declare-styleable>
+    <declare-styleable name="MaterialSearchView_search_hint"></declare-styleable>
+    <declare-styleable name="MaterialSearchView_search_icon_color"></declare-styleable>
+    <declare-styleable name="MaterialSearchView_search_text_color"></declare-styleable>
+    <declare-styleable name="MaterialSearchView"></declare-styleable>
+    <declare-styleable name="MaterialSearchView_search_ime_options"></declare-styleable>
+    <declare-styleable name="MaterialSearchView_search_input_type"></declare-styleable>
+    <declare-styleable name="MaterialSearchView_search_focusable"></declare-styleable>
+</resources>
