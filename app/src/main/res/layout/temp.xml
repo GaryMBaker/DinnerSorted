@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
-        <variable name="temp" type="android.databinding.DataBindingComponent" />
+        <variable name="temp" type="me.garybaker.foodapp.MainActivity" />
     </data>
     <LinearLayout
         android:orientation="vertical"

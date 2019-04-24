@@ -1,5 +1,6 @@
 package me.garybaker.foodapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -14,7 +15,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,14 +34,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-import java.util.Map;
-
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MainActivity";
-    private static final CharSequence REQUIRED = "Required";
+
     public static String EXTRA_POST_KEY = "main";
 
     private FragmentPagerAdapter mPagerAdapter;
@@ -61,8 +58,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 //    private FirebaseRecyclerAdapter imagePostsRecyclerAdapter <, mCommentsRecycler.RecyclerView.ViewHolder>;
 
-    private EditText mTitleField;
-    private EditText mBodyField;
+
+
 
     private TextView navUserDisplayName;
     private TextView navUserID;
@@ -72,6 +69,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     // [END declare_database_ref]
 
     private String mAuthorView;
+
+
 
     /**
      *
@@ -90,20 +89,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mDatabase = FirebaseDatabase.getInstance().getReference();
         // [END initialize_database_ref]
 
-        mBodyField = findViewById(R.id.postBody);
+
         mPostKey = getIntent().getStringExtra("MainActivity");
         mAuthorView = mAuth.getCurrentUser().getDisplayName();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final Button btnPost = (Button) findViewById(R.id.postData);
 
-        mTitleField = findViewById(R.id.postText);
-        mBodyField.setText("this is the body of my shit here..");
+
 
         // Initialize Database
         mPostReference = ref.child("posts").child("-Ld8QJN5-xmJniNi3_IG");
+
 
         mAuth.signInWithEmailAndPassword("garybakerdev@gmail.com", "Gary0704051").addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
@@ -113,9 +111,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     Log.d(TAG, "signInWithEmail:success");
                     Toast.makeText(MainActivity.this, "Authentication Success.", Toast.LENGTH_SHORT).show();
 
-                    navUserDisplayName.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-                    navUserID.setText(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -124,15 +119,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         });
 
-        btnPost.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                submitPost();
 
-            }
-        });
+
 
 
         // Create the adapter that will return a fragment for each section
@@ -188,6 +176,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
+
+    public void logout() {
+
+        mAuth.signOut();
+
+        Intent signout = new Intent(this, SignInActivity.class);
+        startActivity(signout);
+        finish();
+
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -199,113 +198,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
 
-    /**
-     *
-     * submitPost()
-     *
-     * this here well yeah idfek
-     */
-
-    private void submitPost() {
-        final String title = mTitleField.getText().toString();
-        final String body = mBodyField.getText().toString();
-
-        final String userDisplayName = mAuth.getCurrentUser().getDisplayName();
-
-        // Title is required
-        if (TextUtils.isEmpty(title)) {
-            mTitleField.setError(REQUIRED);
-            return;
-        }
-
-        // Body is required
-        if (TextUtils.isEmpty(body)) {
-            mBodyField.setError(REQUIRED);
-            return;
-        }
-
-        // Disable button so there are no multi-posts
-        setEditingEnabled(false);
-        Toast.makeText(this, "Posting...", Toast.LENGTH_SHORT).show();
-
-
-        // [START single_value_read]
-        final String userId = getUid();
-        mDatabase.child("users").child(userId).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        // Get user value
-                        User user = dataSnapshot.getValue(User.class);
-
-                        // [START_EXCLUDE]
-                        if (user == null) {
-                            // User is null, error out
-                            Log.e(TAG, "User " + userId + " is unexpectedly null");
-                            Toast.makeText(MainActivity.this,
-                                    "Error: could not fetch user.",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            // Write new post
-                            writeNewPost(userId, userDisplayName, title, "https://www.w3schools.com/w3images/fjords.jpg", body);
-                        }
-
-                        // Finish this Activity, back to the stream
-                        setEditingEnabled(true);
-//                        finish();
-                        // [END_EXCLUDE]
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w(TAG, "getUser:onCancelled", databaseError.toException());
-                        // [START_EXCLUDE]
-                        setEditingEnabled(true);
-                        // [END_EXCLUDE]
-                    }
-                });
-        // [END single_value_read]
-    }
-
-    private void setEditingEnabled(boolean enabled) {
-        mTitleField.setEnabled(enabled);
-        mBodyField.setEnabled(enabled);
-        if (enabled) {
-//            mSubmitButton.show();
-        } else {
-//            mSubmitButton.hide();
-        }
-    }
-
-
-
-
-    /**
-     *  @param userId
-     * @param username
-     * @param title
-     * @param imageURI
-     * @param body
-     *
-     * writeNewPost()
-     * Create new post at /user-posts/$userid/$postid and at
-     *
-     */
-
-    // [START write_fan_out]
-    private void writeNewPost(String userId, String username, String title, String body) {
-        // Create new post at /user-posts/$userid/$postid and at
-        // /posts/$postid simultaneously
-        String key = mDatabase.child("posts").push().getKey();
-        Post post = new Post(userId, username, title, body);
-        Map<String, Object> postValues = post.toMap();
-
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/posts/" + key, postValues);
-        childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
-
-        mDatabase.updateChildren(childUpdates);
-    }
 
 
     /**
@@ -321,8 +213,37 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+
+        MenuItem logout;
+        logout = menu.findItem(R.id.action_logout);
+        logout.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(getApplicationContext(), "logged out!", Toast.LENGTH_LONG).show();
+                logout();
+                return true;
+            }
+        });
+
+        MenuItem createPost;
+        createPost = menu.findItem(R.id.action_create_post);
+        createPost.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                Intent createPost = new Intent(getApplicationContext(), CreatePost.class);
+                startActivity(createPost);
+
+
+                return true;
+            }
+        });
+
         return true;
     }
+
+
 
 
 

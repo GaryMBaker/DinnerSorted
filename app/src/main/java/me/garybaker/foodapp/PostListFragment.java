@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -76,7 +77,7 @@ public abstract class PostListFragment extends Fragment {
             }
 
             @Override
-            protected void onBindViewHolder(PostViewHolder viewHolder, int position, final Post model) {
+            protected void onBindViewHolder(final PostViewHolder viewHolder, final int position, final Post model) {
                 final DatabaseReference postRef = getRef(position);
 
                 // Set click listener for the whole post view
@@ -85,9 +86,19 @@ public abstract class PostListFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         // Launch PostDetailActivity
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        Intent intent = new Intent(getActivity(), PostModel.class);
                         intent.putExtra(MainActivity.EXTRA_POST_KEY, postKey);
+
+
+                        intent.putExtra("author", model.author);
+                        intent.putExtra("uid", model.uid);
+                        intent.putExtra("title", model.title);
+                        intent.putExtra("body", model.body);
+
+
                         startActivity(intent);
+
+                        Toast.makeText(getContext(),"activity launched", Toast.LENGTH_LONG).show();
                     }
                 });
 
