@@ -8,16 +8,11 @@
     <string name="action_settings">Settings</string>
     <string name="todo">todo</string>
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid beatae debitis dolorem doloribus eaque eius hic in ipsum magnam maiores minima modi molestias necessitatibus obcaecati officia, praesentium provident quae quaerat quod reiciendis soluta, tempore unde ut vero voluptatum! Alias aliquam aspernatur cum dignissimos, doloribus facere harum laborum nam nostrum provident repellat repellendus saepe sunt suscipit tempora veritatis voluptate. Ab, accusamus, adipisci debitis doloribus, eligendi iure laborum libero minima nobis odit officiis provident quae quasi quidem soluta velit voluptatum! Aliquid aperiam asperiores, eligendi enim eveniet excepturi ipsum laboriosam magnam nisi, obcaecati odio, officiis quae quisquam saepe suscipit. Accusantium exercitationem ipsa voluptate!</string>
-    <string name="title_activity_sign_in">SignInActivity</string>
-
-
-    <string name="temp"></string>
 
 
     <string name="hint_password">password</string>
     <string name="hint_email">email</string>
     <string name="sign_up">Sign Up</string>
     <string name="sign_in">Sign In</string>
-    <string name="title_activity_post_model">PostModel</string>
-    <string name="title_activity_create_post">CreatePost</string>
+    <string name="title_activity_new_post">NewPost</string>
 </resources>

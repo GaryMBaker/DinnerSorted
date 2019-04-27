@@ -8,14 +8,10 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_logout"
-        android:orderInCategory="100"
-        android:title="Logout"
-        app:showAsAction="never" />
+        android:id="@+id/logout"
+        android:title="Logout" />
 
     <item
-        android:id="@+id/action_create_post"
-        android:orderInCategory="100"
-        android:title="Create Post"
-        app:showAsAction="never" />
+        android:id="@+id/createPost"
+        android:title="Create Post" />
 </menu>

@@ -38,7 +38,6 @@ import com.google.firebase.database.ValueEventListener;
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MainActivity";
-
     public static String EXTRA_POST_KEY = "main";
 
     private FragmentPagerAdapter mPagerAdapter;
@@ -48,10 +47,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public DatabaseReference ref = database.getReference();
     public FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference mPostReference;
+    private DatabaseReference displayName;
 
-    private String mPostKey;
-    private TextView mTitleView;
-    private TextView mBodyView;
+
     private EditText mCommentField;
     private Button mCommentButton;
     private RecyclerView mCommentsRecycler;
@@ -59,18 +57,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 //    private FirebaseRecyclerAdapter imagePostsRecyclerAdapter <, mCommentsRecycler.RecyclerView.ViewHolder>;
 
 
-
-
     private TextView navUserDisplayName;
-    private TextView navUserID;
 
     // [START declare_database_ref]
-    private DatabaseReference mDatabase;
+    public DatabaseReference mDatabase;
     // [END declare_database_ref]
 
+
     private String mAuthorView;
-
-
 
     /**
      *
@@ -82,26 +76,33 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         navUserDisplayName = findViewById(R.id.userDisplayName);
-        navUserID = findViewById(R.id.textView);
+//        navUserID = findViewById(R.id.textView);
+
+//        navUserDisplayName.setText(mAuth.getCurrentUser().getDisplayName());
 
         // [START initialize_database_ref]
         mDatabase = FirebaseDatabase.getInstance().getReference();
         // [END initialize_database_ref]
 
 
-        mPostKey = getIntent().getStringExtra("MainActivity");
-        mAuthorView = mAuth.getCurrentUser().getDisplayName();
+
+//        get username property from database
+//        mAuthorView = mDatabase.child()
+
+
+
+
+        String mAuthorView = mAuth.getCurrentUser().getUid();
+
+        displayName = ref.child(mAuthorView);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
-
         // Initialize Database
         mPostReference = ref.child("posts").child("-Ld8QJN5-xmJniNi3_IG");
-
 
         mAuth.signInWithEmailAndPassword("garybakerdev@gmail.com", "Gary0704051").addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
@@ -111,6 +112,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     Log.d(TAG, "signInWithEmail:success");
                     Toast.makeText(MainActivity.this, "Authentication Success.", Toast.LENGTH_SHORT).show();
 
+
+//                    navUserID.setText(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -118,8 +122,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 }
             }
         });
-
-
 
 
 
@@ -174,17 +176,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-    }
 
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUsername = headerView.findViewById(R.id.userDisplayName);
+        navUsername.setText(mAuth.getCurrentUser().getDisplayName());
 
-    public void logout() {
-
-        mAuth.signOut();
-
-        Intent signout = new Intent(this, SignInActivity.class);
-        startActivity(signout);
-        finish();
-
+        TextView navEmail = headerView.findViewById(R.id.userDisplayEmail);
+        navEmail.setText(mAuth.getCurrentUser().getEmail());
     }
 
     @Override
@@ -196,7 +194,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             super.onBackPressed();
         }
     }
-
 
 
 
@@ -214,36 +211,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
 
-        MenuItem logout;
-        logout = menu.findItem(R.id.action_logout);
-        logout.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(getApplicationContext(), "logged out!", Toast.LENGTH_LONG).show();
-                logout();
-                return true;
-            }
-        });
-
-        MenuItem createPost;
-        createPost = menu.findItem(R.id.action_create_post);
-        createPost.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-
-                Intent createPost = new Intent(getApplicationContext(), CreatePost.class);
-                startActivity(createPost);
-
-
-                return true;
-            }
-        });
-
         return true;
     }
-
-
 
 
 
@@ -267,6 +236,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if (id == R.id.logout) {
+            mAuth.signOut();
+
+            Intent logout = new Intent(this, SignInActivity.class);
+            startActivity(logout);
+        }
+
+        if (id == R.id.createPost) {
+            Intent createPost = new Intent(this, NewPost.class);
+            startActivity(createPost);
         }
 
         return super.onOptionsItemSelected(item);
@@ -296,6 +277,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         };
         mPostReference.addValueEventListener(postListener);
+
+        ValueEventListener userListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        };
+        displayName.addValueEventListener(userListener);
 
     }
 
