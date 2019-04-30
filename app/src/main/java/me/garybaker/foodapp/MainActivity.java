@@ -1,6 +1,9 @@
 package me.garybaker.foodapp;
 
+import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -19,6 +22,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -33,6 +39,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import static android.support.design.widget.Snackbar.make;
+import static android.widget.Toast.LENGTH_SHORT;
+import static android.widget.Toast.makeText;
+import static me.garybaker.foodapp.R.color;
+import static me.garybaker.foodapp.R.id;
+import static me.garybaker.foodapp.R.string;
 
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,8 +67,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private Button mCommentButton;
     private RecyclerView mCommentsRecycler;
 
-//    private FirebaseRecyclerAdapter imagePostsRecyclerAdapter <, mCommentsRecycler.RecyclerView.ViewHolder>;
-
+    public View headerView;
 
     private TextView navUserDisplayName;
 
@@ -66,39 +78,43 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private String mAuthorView;
 
+    public Toast toast;
+    private boolean mStopThread;
+
+
+    public ViewGroup layout;
+
+    private Snackbar snackbar;
+
+//    public static final CustomSnackbar;
+
+//    public static final CustomSnackbar customSnackbar;
+
     /**
      *
      * @param savedInstanceState
      */
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(this.getResources().getColor(color.colorPrimaryDark));
+
+
         setContentView(R.layout.activity_main);
-
-
-        navUserDisplayName = findViewById(R.id.userDisplayName);
-//        navUserID = findViewById(R.id.textView);
-
-//        navUserDisplayName.setText(mAuth.getCurrentUser().getDisplayName());
 
         // [START initialize_database_ref]
         mDatabase = FirebaseDatabase.getInstance().getReference();
         // [END initialize_database_ref]
 
+        displayName = ref.child("users").child(mAuth.getCurrentUser().getUid());
 
-
-//        get username property from database
-//        mAuthorView = mDatabase.child()
-
-
-
-
-        String mAuthorView = mAuth.getCurrentUser().getUid();
-
-        displayName = ref.child(mAuthorView);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(id.toolbar);
         setSupportActionBar(toolbar);
 
         // Initialize Database
@@ -110,89 +126,140 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (task.isSuccessful()) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithEmail:success");
-                    Toast.makeText(MainActivity.this, "Authentication Success.", Toast.LENGTH_SHORT).show();
-
-
-//                    navUserID.setText(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
+                    makeText(MainActivity.this, "Authentication Success.", LENGTH_SHORT).show();
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithEmail:failure", task.getException());
-                    Toast.makeText(MainActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    makeText(MainActivity.this, "Authentication failed.", LENGTH_SHORT).show();
                 }
             }
         });
 
 
-
         // Create the adapter that will return a fragment for each section
         mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-            private final Fragment[] mFragments = new Fragment[] {
+            private final Fragment[] mFragments = new Fragment[]{
                     new RecentPostsFragment(),
                     new MyPostsFragment(),
                     new MyTopPostsFragment(),
             };
-            private final String[] mFragmentNames = new String[] {
-                    "List 1",
-                    "List 2",
-                    "List 3"
+            private final String[] mFragmentNames = new String[]{
+                    "Yesterday",
+                    "Today",
+                    "Tomorrow"
             };
+
             @Override
             public Fragment getItem(int position) {
                 return mFragments[position];
             }
+
             @Override
             public int getCount() {
                 return mFragments.length;
             }
+
             @Override
             public CharSequence getPageTitle(int position) {
                 return mFragmentNames[position];
             }
         };
+
+
         // Set up the ViewPager with the sections adapter.
-        mViewPager = findViewById(R.id.container);
+        mViewPager = findViewById(id.container);
         mViewPager.setAdapter(mPagerAdapter);
-        TabLayout tabLayout = findViewById(R.id.tabs);
+
+        mViewPager.setCurrentItem(1);
+
+
+        TabLayout tabLayout = findViewById(id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
 
-        FloatingActionButton fab;
-        fab = findViewById(R.id.fab);
+//        final Toast toast = new Toast(getApplicationContext());
+        final FloatingActionButton fab = findViewById(id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+
+
+                // create instance
+                Toast toast = new Toast(getApplicationContext());
+
+// inflate custom view
+                View viewInflated = getLayoutInflater().inflate(R.layout.activity_new_post, null);
+
+// set custom view
+                toast.setView(viewInflated);
+
+// set duration
+                toast.setDuration(Toast.LENGTH_LONG);
+
+// set position
+//                int margin = getResources().getDimensionPixelSize(R.dimen.toast_vertical_margin);
+//                toast.setGravity(Gravity.BOTTOM | Gravity.CENTER_VERTICAL, 0, margin);
+
+// show toast
+                toast.show();
+
+
             }
         });
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        FloatingActionButton closeFab;
+        closeFab = findViewById(id.fabNewPost);
+
+        closeFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toast.cancel();
+
+                fab.show();
+            }
+        });
+
+        DrawerLayout drawer = findViewById(id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, string.navigation_drawer_open, string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        headerView = navigationView.getHeaderView(0);
 
-        View headerView = navigationView.getHeaderView(0);
-        TextView navUsername = headerView.findViewById(R.id.userDisplayName);
-        navUsername.setText(mAuth.getCurrentUser().getDisplayName());
-
-        TextView navEmail = headerView.findViewById(R.id.userDisplayEmail);
+        TextView navEmail = headerView.findViewById(id.userDisplayEmail);
         navEmail.setText(mAuth.getCurrentUser().getEmail());
+
+        navUserDisplayName = headerView.findViewById(id.userDisplayName);
     }
 
+
+    /**
+     *
+     * public void onBackPressed()
+     *
+     * this functions' sole purpose is to handle closing the DrawerLayout View at drawer_layout
+     * it receives a click event to then which it assess's weather the View is open or closed
+     * and then closes the drawer when the condition's are met and fully satisfied
+     *
+     */
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
+    }
+
+    public void showSnackbar(ViewGroup view, String message, int duration)
+    {
+        make(view, message, duration).show();
     }
 
 
@@ -215,6 +282,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
 
+
+    public void openDialog() {
+        final Dialog dialog = new Dialog(this.getApplicationContext()); // Context, this, etc.
+        dialog.setContentView(R.layout.activity_new_post);
+//            dialog.setTitle(R.string.dialog_title);
+        dialog.show();
+    }
 
     /**
      *
@@ -276,12 +350,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         };
+
         mPostReference.addValueEventListener(postListener);
 
         ValueEventListener userListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
+                String user = dataSnapshot.getValue(User.class).getUsername();
+
+                navUserDisplayName.setText(user);
             }
 
             @Override

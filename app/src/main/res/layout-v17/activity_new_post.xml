@@ -12,11 +12,14 @@
         android:id="@+id/fabNewPost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:layout_gravity="top|end"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="false"
         android:layout_margin="16dp"
         android:background="@color/colorPrimaryDark"
-        android:src="@drawable/cross"/>
+        android:src="@drawable/ic_image_edit"
+        app:layout_anchorGravity="right"
+        android:layoutDirection="rtl" />
 
 
     <LinearLayout
@@ -30,9 +33,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="New post:"
+            android:text="Create New Post"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="32dp" />
 
         <EditText
@@ -43,7 +46,6 @@
             tools:ignore="LabelFor"
             android:inputType="text"
             android:importantForAutofill="no"
-            android:backgroundTint="@color/cardview_light_background"
             android:textColor="@color/white"/>
 
         <EditText
@@ -51,11 +53,18 @@
             android:layout_height="wrap_content"
             android:id="@+id/postBody"
             tools:targetApi="o"
-            android:backgroundTint="@color/cardview_light_background"
             tools:ignore="LabelFor"
             android:inputType="text"
             android:importantForAutofill="no"
             android:textColor="@color/white"/>
+
+        <Button
+            android:id="@+id/postData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#212121"
+            android:text="Submit"
+            app:backgroundTint="@color/colorPrimaryDark" />
 
         <ImageView
             android:layout_width="300dp"
@@ -65,14 +74,6 @@
             android:scaleType="fitXY"
             android:src="@mipmap/ic_launcher"
             android:id="@+id/iv"/>
-
-        <Button
-            android:id="@+id/postData"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#212121"
-            android:text="Submit"
-            app:backgroundTint="@color/colorPrimaryDark" />
 
 
 

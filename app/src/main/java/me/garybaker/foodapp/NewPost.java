@@ -49,9 +49,10 @@ public class NewPost extends MainActivity {
 
 
     /**
+     *
      * submitPost()
-     * <p>
      * this here well yeah idfek
+     *
      */
 
     private void submitPost() {
