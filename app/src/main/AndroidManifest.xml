@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="me.garybaker.foodapp">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -14,10 +15,11 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:appComponentFactory">
+        <activity android:name=".PostActivity"></activity>
         <activity
             android:name=".NewPost"
             android:label="@string/title_activity_new_post"
-            android:theme="@style/Theme.MaterialComponents.NoActionBar"></activity>
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
         <activity
             android:name=".SignInActivity"
             android:label="@string/app_name"

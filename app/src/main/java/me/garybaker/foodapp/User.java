@@ -34,9 +34,5 @@ public class User {
         return result;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
 }
 // [END blog_user_class]

@@ -23,12 +23,8 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public TextView numStarsView;
     public TextView bodyView;
 
-
-
     StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-    StorageReference photoReference= storageReference.child("tire1.jpg");
-
-
+    StorageReference photoReference = storageReference;
 
     public PostViewHolder(View itemView) {
         super(itemView);
@@ -45,7 +41,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         authorView.setText(post.author);
         numStarsView.setText(String.valueOf(post.starCount));
         bodyView.setText(post.body);
-
+        photoReference = storageReference.child(String.valueOf(post.imageURI));
 
         final long ONE_MEGABYTE = 1024 * 1024;
         photoReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {

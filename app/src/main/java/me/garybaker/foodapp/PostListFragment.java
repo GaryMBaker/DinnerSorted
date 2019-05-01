@@ -3,6 +3,7 @@ package me.garybaker.foodapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -40,6 +41,7 @@ public abstract class PostListFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_all_posts, container, false);
 
+
         // [START create_database_reference]
         mDatabase = FirebaseDatabase.getInstance().getReference();
         // [END create_database_reference]
@@ -47,6 +49,13 @@ public abstract class PostListFragment extends Fragment {
         mRecycler = rootView.findViewById(R.id.messagesList);
         mRecycler.setHasFixedSize(true);
 
+
+        SwipeRefreshLayout swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            public void onRefresh() {
+
+            }
+        });
         return rootView;
     }
 
@@ -75,6 +84,7 @@ public abstract class PostListFragment extends Fragment {
                 return new PostViewHolder(inflater.inflate(R.layout.item_post, viewGroup, false));
             }
 
+
             @Override
             protected void onBindViewHolder(PostViewHolder viewHolder, int position, final Post model) {
                 final DatabaseReference postRef = getRef(position);
@@ -90,7 +100,7 @@ public abstract class PostListFragment extends Fragment {
                         // here is where we need to put the extras into the new mvc for displaying
                         // the posts individually.
 
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        Intent intent = new Intent(getActivity(), PostActivity.class);
                         intent.putExtra(MainActivity.EXTRA_POST_KEY, postKey);
                         startActivity(intent);
                     }
@@ -155,6 +165,7 @@ public abstract class PostListFragment extends Fragment {
         });
     }
     // [END post_stars_transaction]
+
 
 
     @Override

@@ -12,7 +12,7 @@ public class Post {
     public String uid;
     public String author;
     public String title;
-//    public String imageURI;
+    public String imageURI;
     public String body;
     public int starCount = 0;
     public Map<String, Boolean> stars = new HashMap<>();
@@ -21,11 +21,11 @@ public class Post {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 
-    public Post(String uid, String author, String title, String body) {
+    public Post(String uid, String author, String uriImage, String title, String body) {
         this.uid = uid;
         this.author = author;
         this.title = title;
-//        this.imageURI = uriImage;
+        this.imageURI = uriImage;
         this.body = body;
     }
 
@@ -35,7 +35,7 @@ public class Post {
         result.put("uid", uid);
         result.put("author", author);
         result.put("title", title);
-//        result.put("imageURI", imageURI);
+        result.put("imageURI", imageURI);
         result.put("body", body);
         result.put("starCount", starCount);
         result.put("stars", stars);

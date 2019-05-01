@@ -1,7 +1,6 @@
 package me.garybaker.foodapp;
 
 import android.annotation.TargetApi;
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,7 +39,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import static android.support.design.widget.Snackbar.make;
 import static android.widget.Toast.LENGTH_SHORT;
 import static android.widget.Toast.makeText;
 import static me.garybaker.foodapp.R.color;
@@ -60,7 +58,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public DatabaseReference ref = database.getReference();
     public FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference mPostReference;
-    private DatabaseReference displayName;
+    public DatabaseReference displayName;
 
 
     private EditText mCommentField;
@@ -69,7 +67,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public View headerView;
 
-    private TextView navUserDisplayName;
+    public TextView navUserDisplayName;
 
     // [START declare_database_ref]
     public DatabaseReference mDatabase;
@@ -136,47 +134,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
 
 
-        // Create the adapter that will return a fragment for each section
-        mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-            private final Fragment[] mFragments = new Fragment[]{
-                    new RecentPostsFragment(),
-                    new MyPostsFragment(),
-                    new MyTopPostsFragment(),
-            };
-            private final String[] mFragmentNames = new String[]{
-                    "Yesterday",
-                    "Today",
-                    "Tomorrow"
-            };
-
-            @Override
-            public Fragment getItem(int position) {
-                return mFragments[position];
-            }
-
-            @Override
-            public int getCount() {
-                return mFragments.length;
-            }
-
-            @Override
-            public CharSequence getPageTitle(int position) {
-                return mFragmentNames[position];
-            }
-        };
-
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = findViewById(id.container);
-        mViewPager.setAdapter(mPagerAdapter);
-
-        mViewPager.setCurrentItem(1);
-
-
-        TabLayout tabLayout = findViewById(id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-
-
+        refreshData();
 //        final Toast toast = new Toast(getApplicationContext());
         final FloatingActionButton fab = findViewById(id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -247,6 +205,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * and then closes the drawer when the condition's are met and fully satisfied
      *
      */
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(id.drawer_layout);
@@ -257,11 +216,46 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    public void showSnackbar(ViewGroup view, String message, int duration)
-    {
-        make(view, message, duration).show();
-    }
 
+    public void refreshData() {
+        // Create the adapter that will return a fragment for each section
+        mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
+            private final Fragment[] mFragments = new Fragment[]{
+                    new RecentPostsFragment(),
+                    new MyPostsFragment(),
+                    new MyTopPostsFragment(),
+            };
+            private final String[] mFragmentNames = new String[]{
+                    "Yesterday",
+                    "Today",
+                    "Tomorrow"
+            };
+
+            @Override
+            public Fragment getItem(int position) {
+                return mFragments[position];
+            }
+
+            @Override
+            public int getCount() {
+                return mFragments.length;
+            }
+
+            @Override
+            public CharSequence getPageTitle(int position) {
+                return mFragmentNames[position];
+            }
+        };
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = findViewById(id.container);
+        mViewPager.setAdapter(mPagerAdapter);
+
+        mViewPager.setCurrentItem(1);
+
+        TabLayout tabLayout = findViewById(id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+    }
 
 
     /**
@@ -281,14 +275,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return true;
     }
 
-
-
-    public void openDialog() {
-        final Dialog dialog = new Dialog(this.getApplicationContext()); // Context, this, etc.
-        dialog.setContentView(R.layout.activity_new_post);
-//            dialog.setTitle(R.string.dialog_title);
-        dialog.show();
-    }
 
     /**
      *
@@ -356,9 +342,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         ValueEventListener userListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String user = dataSnapshot.getValue(User.class).getUsername();
+                String user = dataSnapshot.getValue(User.class).username;
 
                 navUserDisplayName.setText(user);
+
             }
 
             @Override

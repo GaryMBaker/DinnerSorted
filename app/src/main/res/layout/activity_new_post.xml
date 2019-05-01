@@ -7,7 +7,6 @@
     tools:context=".NewPost"
     android:id="@+id/newPost">
 
-
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabNewPost"
         android:layout_width="wrap_content"
@@ -17,7 +16,6 @@
         android:layout_margin="16dp"
         android:background="@color/colorPrimaryDark"
         android:src="@drawable/cross"/>
-
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -73,8 +71,6 @@
             android:background="#212121"
             android:text="Submit"
             app:backgroundTint="@color/colorPrimaryDark" />
-
-
 
     </LinearLayout>
 
