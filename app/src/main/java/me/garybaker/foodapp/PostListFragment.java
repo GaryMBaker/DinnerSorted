@@ -84,9 +84,8 @@ public abstract class PostListFragment extends Fragment {
                 return new PostViewHolder(inflater.inflate(R.layout.item_post, viewGroup, false));
             }
 
-
             @Override
-            protected void onBindViewHolder(PostViewHolder viewHolder, int position, final Post model) {
+            protected void onBindViewHolder(final PostViewHolder viewHolder, int position, final Post model) {
                 final DatabaseReference postRef = getRef(position);
 
                 // Set click listener for the whole post view
@@ -94,14 +93,19 @@ public abstract class PostListFragment extends Fragment {
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Launch PostDetailActivity
+                        // Launch PostActivity
 
                         // TODO
                         // here is where we need to put the extras into the new mvc for displaying
                         // the posts individually.
 
                         Intent intent = new Intent(getActivity(), PostActivity.class);
-                        intent.putExtra(MainActivity.EXTRA_POST_KEY, postKey);
+                        intent.putExtra("title", model.title);
+                        intent.putExtra(postKey, model.author);
+                        intent.putExtra(postKey, model.imageURI);
+                        intent.putExtra(postKey, model.body);
+                        intent.putExtra(postKey, model.starCount);
+                        intent.putExtra(postKey, model.uid);
                         startActivity(intent);
                     }
                 });

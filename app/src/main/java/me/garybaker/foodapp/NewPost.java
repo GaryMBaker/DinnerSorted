@@ -33,7 +33,6 @@ import java.util.Map;
 
 public class NewPost extends MainActivity {
 
-
     private static final CharSequence REQUIRED = "Required";
     private static final String TAG = "NewPost";
 
@@ -42,7 +41,6 @@ public class NewPost extends MainActivity {
     public FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
     public FirebaseDatabase mDB = FirebaseDatabase.getInstance();
     public ImageView selectImage;
-
 
     private String key;
 
